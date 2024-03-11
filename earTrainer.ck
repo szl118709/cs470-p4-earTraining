@@ -60,11 +60,10 @@ global int midiVelocity;
 
 if( !min.open( 0 ) ) me.exit();
 
-fun void NoteOn( int m, int v )
+fun void NoteOn( int m )
 {
-    v * 1.0 / 128 => float velocity;
     b.noteOn( m, VELOCITY );
-    <<< "on", m, v >>>;
+    <<< "on", m >>>;
 }
 
 
@@ -87,7 +86,7 @@ while( true )
     {
         if( midiVelocity > 0 )
         {
-            NoteOn( midiNote, midiVelocity );
+            NoteOn( midiNote );
         }
         else
         {

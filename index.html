@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundscapeAI</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <link rel="stylesheet" href="./canvas.css">
+    <link rel="stylesheet" href="./style.css">
+    <!-- favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+
+<body>
+    <canvas id="canvas1" class="show"></canvas>
+
+    <div class="container">
+        <h1 class="title">SoundscapeAI</h1>
+
+        <div class="slidecontainer texture">
+            <input type="range" min="0" max="100" value="0" class="slider" id="texture">
+            <label for="control">TEXTURE</label><br />
+        </div>
+
+        <div class="buttonWrapper">
+            <p id="buttonDesc">Click to grant microphone acess</p>
+            <button id="mainButton" class="clickMe">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </div>
+
+        <div class="slidecontainer control">
+            <input type="range" min="0" max="100" value="0" class="slider" id="control">
+            <label for="control">Expression</label><br />
+        </div>
+    </div>
+
+
+    <!-- Connect Web Audio API, Connect webchuck.js and webchuck.wasm -->
+    <script> var whereIsChuck = "https://cdn.jsdelivr.net/gh/ccrma/webchuck/src"; </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ccrma/webchuck/src/webchuck_host.js"></script>
+    <!-- Custom scripts -->
+    <script type="text/javascript" src="./canvas.js"></script>
+    <script type="text/javascript" src="./connect.js"></script>
+    <script type="text/javascript" src="./main.js"></script>
+</body>
+
+</html>

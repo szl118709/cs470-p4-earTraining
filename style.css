@@ -1,0 +1,163 @@
+/* fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+body 
+{
+    font-family: 'Rubik', sans-serif;
+    font-weight: 300;
+    color: #333;
+}
+
+
+.container 
+{
+    min-width: 600px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* title */
+.title
+{
+    font-size: 4rem;
+    font-weight: bold;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -10%);
+}
+
+/* main button */
+.buttonWrapper
+{
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    transform: translate(-2%, -2%);
+    display: flex;
+    align-items: center;
+}
+#mainButton
+{
+    background-color: #f33;
+    display: inline-block;
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    text-align: center;
+    font-size: 2rem;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: 1rem;
+}
+#mainButton.clickMe
+{
+    animation: oscillate 1s infinite;
+}
+
+/* oscillate button up and down */
+@keyframes oscillate {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-2px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+#buttonDesc
+{
+    font-style: italic;
+}
+.fa-play {
+    padding-left: 3px;
+    padding-top: 1px;
+    font-size: 1rem;
+}
+.fa-microphone {
+    padding-left: 0px;
+}
+.fa-stop {
+    font-size: 1rem;
+}
+
+
+/* slider texture */
+.slidecontainer.texture
+{
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 16%;
+}
+#texture
+{
+    width: 100%;
+}
+
+/* bottom slider */
+.slidecontainer.control
+{
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 8%;
+}
+#control
+{
+    width: 100%;
+}
+
+/* GENERIC */
+input 
+{
+    margin-bottom: 0%;
+}
+label
+{
+    text-transform: uppercase;
+    font-weight: regular;
+    font-size: 2rem;
+    font-style: italic;
+}
+
+
+/* mobile media query */
+@media only screen and (max-width: 600px) {
+    .title
+    {
+        font-size: 2.5rem;
+    }
+
+    .buttonWrapper
+    {
+        font-size: 1rem;
+
+    }
+    #mainButton
+    {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+    }
+
+    .fa-play, .fa-stop 
+    {
+        font-size: .75rem;
+    }
+    .fa-microphone 
+    {
+        padding: 0;
+        font-size: 1.25rem;
+    }
+}
