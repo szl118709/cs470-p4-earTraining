@@ -73,7 +73,7 @@ function init()
         let y = Math.random() * (innerHeight - size * 2) + size;
         let directionX = (Math.random() * .4) - .2;
         let directionY = (Math.random() * .4) - .2;
-        let color = 'rgba(' + Math.random() * 255 + ',255,' + Math.random() * 400 + ',' + Math.random() + ')';
+        let color = 'rgba(' +0 + ',' + Math.random() * 400 + ',255,' +  + Math.random() + ')';
         let currTime = Date.now();
 
         particleArray.push(new Particle(x, y, directionX, directionY, size, color, currTime));

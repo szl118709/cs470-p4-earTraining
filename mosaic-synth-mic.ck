@@ -21,8 +21,8 @@
 "felt.txt" @=> string FEATURES_FILE;
 "felt-texture.wav" @=> string space2File;
 
-global float TEXTURE;
-global float CONTROL;
+global float SLIDER1;
+global float SLIDER2;
 
 //------------------------------------------------------------------------------
 // expected model file format; each VALUE is a feature value
@@ -237,7 +237,7 @@ fun void synthesize( int uid )
 
     // open the envelope, overlap add this into the overall audio
     envelope.keyOn();
-    if (Math.random2f(0,1) < TEXTURE) { envelope2.keyOn(); }
+    if (Math.random2f(0,1) < SLIDER1) { envelope2.keyOn(); }
     // wait
     (EXTRACT_TIME*3)-envelope.releaseTime() => now;
     // start the release
@@ -252,12 +252,12 @@ fun void connect()
     while (true)
     {
         // Update TEXTURE SLIDER
-        g2.gain(TEXTURE);
+        g2.gain(SLIDER1);
         // update control
-        Math.floor(CONTROL * 50) $ int + 1 => K;
+        Math.floor(SLIDER2 * 50) $ int + 1 => K;
         for (0 => int i; i < NUM_VOICES; i++) 
         {
-            (CONTROL * 0.3) => rev[i].mix;
+            (SLIDER2 * 0.3) => rev[i].mix;
         }
         EXTRACT_TIME / 8 => now;
     }

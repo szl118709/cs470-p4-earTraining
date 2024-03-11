@@ -10,22 +10,36 @@ chuckPrint = function (text) {
 }
 
 // Sliders
-var textureSlider = document.getElementById("texture");
-var controlSlider= document.getElementById("control");
+var slider1 = document.getElementById("slider1");
+var slider2 = document.getElementById("slider2");
+var slider3 = document.getElementById("slider3");
+var slider4 = document.getElementById("slider4");
 
-textureSlider.value = 0;
-controlSlider.value = 0;
+slider1.value = 0;
+slider2.value = 0;
+slider3.value = 0;
+slider4.value = 0;
 
 // Update the current slider value (each time you drag the slider handle)
-textureSlider.oninput = function() {
+slider1.oninput = function() {
     if (theChuck) {
-        theChuck.setFloat("TEXTURE", this.value/100.0);
+        theChuck.setFloat("SLIDER1", this.value/100.0);
     }
     texture = this.value/100.0;
 } 
-controlSlider.oninput = function() {
+slider2.oninput = function() {
     if (theChuck) {
-        theChuck.setFloat("CONTROL", this.value/100.0);
+        theChuck.setFloat("SLIDER2", this.value/100.0);
+    }
+} 
+slider3.oninput = function() {
+    if (theChuck) {
+        theChuck.setFloat("SLIDER3", this.value/100.0);
+    }
+} 
+slider4.oninput = function() {
+    if (theChuck) {
+        theChuck.setFloat("SLIDER4", this.value/100.0);
     }
 } 
 

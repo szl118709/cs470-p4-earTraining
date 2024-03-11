@@ -1,3 +1,4 @@
+import { Chuck } from 'https://cdn.jsdelivr.net/npm/webchuck/+esm';
 // Soundscape AI Main
 // Main Button
 const mainButton = document.getElementById('mainButton');
@@ -5,21 +6,43 @@ const mainButton = document.getElementById('mainButton');
 //var serverFilesToPreload = [];
 const serverFilesToPreload = [
     { 
-        serverFilename: "./felt-main.wav", virtualFilename: "felt-main.wav" 
+        serverFilename: "./util-intqueue.ck", virtualFilename: "util-intqueue.ck"
     },
     { 
-        serverFilename: "./felt-texture.wav", virtualFilename: "felt-texture.wav" 
+        serverFilename: "./util-voicebankvoice.ck", virtualFilename: "util-voicebankvoice.ck" 
     },
     { 
-        serverFilename: "./felt.txt", virtualFilename: "felt.txt" 
+        serverFilename: "./util-voicebank.ck", virtualFilename: "util-voicebank.ck" 
     },
-]
-var preloadedFilesReady = preloadFilenames(serverFilesToPreload);
+    { 
+        serverFilename: "./bandweeow.ck", virtualFilename: "bandweeow.ck" 
+    },
+    { 
+        serverFilename: "./earTrainer.ck", virtualFilename: "earTrainer.ck" 
+    },
 
-// Read in Chuck Code
-code = fetch("mosaic-synth-mic.ck")
-    .then(response => response.text())
-    .then(text => { code = text; });
+]
+
+async function startChuck()
+{
+    buttonDesc.innerHTML = "Loading...";
+    window.theChuck ??= await Chuck.init(serverFilesToPreload);
+    // Mic
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+        .then((stream) =>
+        {
+            const source = theChuck.context.createMediaStreamSource(stream);
+            source.connect(theChuck);
+        });
+    // Override print
+    theChuck.chuckPrint = function (text) {
+        if (text.startsWith("window: "))
+        {
+            text = text.substring(8);
+            generateParticle(text)
+        }
+    }
+}
 
 let state = -1;
 
@@ -29,18 +52,12 @@ mainButton.addEventListener('click', async () =>
     if (state == -1)
     {
         // Load 
-        await preloadedFilesReady;
         await startChuck();
-        await code;
-        // Mic
-        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then((stream) =>
-            {
-                const source = audioContext.createMediaStreamSource(stream);
-                source.connect(theChuck);
-            });
+        await theChuck.runFile("util-intqueue.ck");
+        await theChuck.runFile("util-voicebankvoice.ck" );
+        await theChuck.runFile("util-voicebank.ck" );
+        await theChuck.runFile("bandweeow.ck" );
         console.log("WebChuck is ready!");
-        // connect
 
         // Run
         state = 1;
@@ -48,7 +65,7 @@ mainButton.addEventListener('click', async () =>
     } else if (state == 0)
     {
         // Stop
-        await theChuck.removeLastCode();
+        await theChuck.clearChuckInstance();
         state = 1;
         showPlay();
         stopCanvas();
@@ -56,7 +73,8 @@ mainButton.addEventListener('click', async () =>
     } else if (state == 1)
     {
         // Run
-        await theChuck.runCode(code);
+        await theChuck.runFile("earTrainer.ck");
+
         state = 0;
         showStop();
         startCanvas();

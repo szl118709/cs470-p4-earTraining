@@ -90,30 +90,56 @@ body
 }
 
 
-/* slider texture */
-.slidecontainer.texture
+/* sliders */
+.slidecontainer.slider1
 {
     position: absolute;
     bottom: 0;
     left: 10%;
     width: 80%;
-    height: 16%;
+    height: 40%;
 }
-#texture
+#slider1
+{
+    width: 100%;
+}
+
+.slidecontainer.slider2
+{
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 30%;
+}
+#slider2
+{
+    width: 100%;
+}
+
+.slidecontainer.slider3
+{
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 20%;
+}
+#slider3
 {
     width: 100%;
 }
 
 /* bottom slider */
-.slidecontainer.control
+.slidecontainer.slider4
 {
     position: absolute;
     bottom: 0;
     left: 10%;
     width: 80%;
-    height: 8%;
+    height: 10%;
 }
-#control
+#slider4
 {
     width: 100%;
 }
