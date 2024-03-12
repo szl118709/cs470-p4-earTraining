@@ -28,12 +28,12 @@ async function startChuck()
     buttonDesc.innerHTML = "Loading...";
     window.theChuck ??= await Chuck.init(serverFilesToPreload);
     // Mic
-    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-        .then((stream) =>
-        {
-            const source = theChuck.context.createMediaStreamSource(stream);
-            source.connect(theChuck);
-        });
+    // navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    //     .then((stream) =>
+    //     {
+    //         const source = theChuck.context.createMediaStreamSource(stream);
+    //         source.connect(theChuck);
+    //     });
     // Override print
     theChuck.chuckPrint = function (text) {
         if (text.startsWith("window: "))
@@ -45,6 +45,10 @@ async function startChuck()
 }
 
 let state = -1;
+var SLIDER1 = 0;
+var SLIDER2 = 0;
+var SLIDER3 = 0;
+var SLIDER4 = 0;
 
 // MAIN BUTTON
 mainButton.addEventListener('click', async () =>
@@ -56,7 +60,7 @@ mainButton.addEventListener('click', async () =>
         await theChuck.runFile("util-intqueue.ck");
         await theChuck.runFile("util-voicebankvoice.ck" );
         await theChuck.runFile("util-voicebank.ck" );
-        await theChuck.runFile("bandweeow.ck" );
+        await theChuck.runFile("bandweeow.ck");
         console.log("WebChuck is ready!");
 
         // Run
@@ -65,7 +69,12 @@ mainButton.addEventListener('click', async () =>
     } else if (state == 0)
     {
         // Stop
+        SLIDER1 = await theChuck.getFloat("SLIDER1");
+        SLIDER2 = await theChuck.getFloat("SLIDER2");
+        SLIDER3 = await theChuck.getFloat("SLIDER3");
+        SLIDER4 = await theChuck.getFloat("SLIDER4");
         await theChuck.clearChuckInstance();
+
         state = 1;
         showPlay();
         stopCanvas();
@@ -74,6 +83,10 @@ mainButton.addEventListener('click', async () =>
     {
         // Run
         await theChuck.runFile("earTrainer.ck");
+        theChuck.setFloat("SLIDER1", SLIDER1);
+        theChuck.setFloat("SLIDER2", SLIDER2);
+        theChuck.setFloat("SLIDER3", SLIDER3);
+        theChuck.setFloat("SLIDER4", SLIDER1);
 
         state = 0;
         showStop();
