@@ -19,12 +19,23 @@ body
 /* title */
 .title
 {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: bold;
     position: absolute;
     top: 10%;
     left: 50%;
     transform: translate(-50%, -10%);
+}
+
+/* title */
+.diff_display
+{
+    font-size: 2rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* main button */

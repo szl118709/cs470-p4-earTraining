@@ -49,6 +49,7 @@ var SLIDER1 = 0;
 var SLIDER2 = 0;
 var SLIDER3 = 0;
 var SLIDER4 = 0;
+var DIFF = 0;
 
 // MAIN BUTTON
 mainButton.addEventListener('click', async () =>
@@ -66,7 +67,8 @@ mainButton.addEventListener('click', async () =>
         // Run
         state = 1;
         showPlay();
-    } else if (state == 0)
+    } 
+    else if (state == 0)
     {
         // Stop
         SLIDER1 = await theChuck.getFloat("SLIDER1");
@@ -79,7 +81,9 @@ mainButton.addEventListener('click', async () =>
         showPlay();
         stopCanvas();
 
-    } else if (state == 1)
+        clearInterval(timerId);
+    } 
+    else if (state == 1)
     {
         // Run
         await theChuck.runFile("earTrainer.ck");
@@ -87,10 +91,15 @@ mainButton.addEventListener('click', async () =>
         theChuck.setFloat("SLIDER2", SLIDER2);
         theChuck.setFloat("SLIDER3", SLIDER3);
         theChuck.setFloat("SLIDER4", SLIDER1);
-
+        
         state = 0;
         showStop();
         startCanvas();
+
+        var timerId = setInterval(async ()=> {
+            DIFF = await theChuck.getFloat("DIFF");
+            document.getElementById("diff").innerHTML = DIFF; 
+        }, 100);
     }
 });
 

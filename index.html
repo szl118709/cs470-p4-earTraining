@@ -18,10 +18,12 @@
 </head>
 
 <body>
+    <!-- <script type="text/javascript" src="./diff.js"></script> -->
     <canvas id="canvas1" class="show"></canvas>
 
     <div class="container">
         <h1 class="title">Recreate the Synth!</h1>
+        <h1 class="diff_display" id="diff"></h1>
 
         <div class="slidecontainer slider1">
             <input type="range" min="0" max="100" value="0" class="slider" id="slider1">
@@ -29,7 +31,7 @@
         </div>
 
         <div class="buttonWrapper">
-            <p id="buttonDesc">Click to grant microphone acess</p>
+            <p id="buttonDesc">Click to load system</p>
             <button id="mainButton" class="clickMe">
                 <i class="fas fa-microphone"></i>
             </button>
