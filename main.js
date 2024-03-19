@@ -18,7 +18,7 @@ const serverFilesToPreload = [
         serverFilename: "./bandweeow.ck", virtualFilename: "bandweeow.ck" 
     },
     { 
-        serverFilename: "./earTrainer.ck", virtualFilename: "earTrainer.ck" 
+        serverFilename: "./earTrainer2.ck", virtualFilename: "earTrainer2.ck" 
     },
 
 ]
@@ -86,7 +86,7 @@ mainButton.addEventListener('click', async () =>
     else if (state == 1)
     {
         // Run
-        await theChuck.runFile("earTrainer.ck");
+        await theChuck.runFile("earTrainer2.ck");
         theChuck.setFloat("SLIDER1", SLIDER1);
         theChuck.setFloat("SLIDER2", SLIDER2);
         theChuck.setFloat("SLIDER3", SLIDER3);
