@@ -13,10 +13,16 @@ global int PLAYRADIO;
 
 // things that are the same for ref and user
 0.1 => float velocity;
+
 0 => float reverb_min;
 0.3 => float reverb_range;
+
 1000 => float lpf_min;
 15000 => float lpf_range;
+
+1 => float compress_min;
+9 => float compress_range;
+
 me.dir() + "93.wav" => string filename;
 
 
@@ -26,12 +32,13 @@ me.dir() + "93.wav" => string filename;
 // sound file to load; me.dir() returns location of this file
 
 // the patch 
-SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Pan2 pan_ref => dac;
-buf_ref => l_ref => rev_ref => FFT fft1;
+SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
+buf_ref => l_ref => rev_ref => d_ref => FFT fft1;
 // load the file
 filename => buf_ref.read;
 velocity => buf_ref.gain;
-
+d_ref.compress();
+d_ref.thresh(0.3);
 
 fun void ApplyGlobals_ref()
 {
@@ -57,10 +64,13 @@ spork ~ ApplyGlobals_ref();
 fun void loop_ref() {
     while( true )
     {
-        Math.random2f(reverb_min, reverb_min + reverb_range) => global float reverb_ref;
-        Math.random2f(lpf_min, lpf_min + lpf_range) => global float lowpass_ref;
+        Math.random2f(reverb_min, reverb_min + reverb_range) => float reverb_ref;
+        Math.random2f(lpf_min, lpf_min + lpf_range) => float lowpass_ref;
+        Math.random2f(compress_min, compress_min + compress_range) => float compress_ref;
+
         reverb_ref => rev_ref.mix;
         lowpass_ref => l_ref.freq;
+        compress_ref => d_ref.ratio;
 
         0 => buf_ref.pos;
         buf_ref.samples()::samp => now;
@@ -73,11 +83,13 @@ spork ~loop_ref();
 // user
 //------------------------------------------------------------------------------
 // the patch 
-SndBuf buf_user => LPF l_user => JCRev rev_user => Pan2 pan_user => dac;
-buf_user => l_user => rev_user => FFT fft2;
+SndBuf buf_user => LPF l_user => JCRev rev_user => Dyno d_user => Pan2 pan_user => dac;
+buf_user => l_user => rev_user => d_user => FFT fft2;
 // load the file
 filename => buf_user.read;
 velocity => buf_user.gain;
+d_user.compress();
+d_user.thresh(0.3);
 
 fun void ApplyGlobals_user()
 {
@@ -85,6 +97,7 @@ fun void ApplyGlobals_user()
     {
         reverb_min + reverb_range * SLIDER2 => rev_user.mix;
         lpf_min + lpf_range * SLIDER3 => l_user.freq;
+        compress_min + compress_range * SLIDER4 => d_user.ratio;
 
         if (PLAYRADIO == 0) { // play both; play user on the right
             1 => pan_user.pan;

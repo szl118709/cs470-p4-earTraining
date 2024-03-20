@@ -21,9 +21,6 @@ const serverFilesToPreload = [
         serverFilename: "./earTrainer2.ck", virtualFilename: "earTrainer2.ck" 
     },
     { 
-        serverFilename: "./PFv2.wav", virtualFilename: "PFv2.wav" 
-    },
-    { 
         serverFilename: "./93.wav", virtualFilename: "93.wav" 
     },
 
