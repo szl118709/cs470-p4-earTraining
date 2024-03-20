@@ -9,64 +9,108 @@ global float SLIDER2;
 global float SLIDER3;
 global float SLIDER4;
 global float DIFF;
+global int PLAYRADIO;
 
 // things that are the same for ref and user
 0.1 => float velocity;
-54 => int pitch_min;
-31 => int pitch_range; // range = [36, 96]
 0 => float reverb_min;
-0.5 => float reverb_range; // range = [0, 0.5]
-500 => float lpf_min;
-15000 => float lpf_range; // range = [500, 15500]
-0.2 => float cutoff_min;
-0.8 => float cutoff_range;
+0.3 => float reverb_range;
+1000 => float lpf_min;
+15000 => float lpf_range;
+me.dir() + "93.wav" => string filename;
 
 
 //------------------------------------------------------------------------------
 // ref
 //------------------------------------------------------------------------------
-BandWeeow b_ref => LPF l_ref => JCRev rev_ref => dac.left;
-b_ref => l_ref => rev_ref => FFT fft1;
+// sound file to load; me.dir() returns location of this file
 
-velocity => b_ref.gain;
-Math.random2(pitch_min, pitch_min + pitch_range) => global int pitch_ref; 
-Math.random2f(reverb_min, reverb_min + reverb_range) => global float reverb_ref;
-Math.random2f(lpf_min, lpf_min + lpf_range) => global float lowpass_ref;
-Math.random2f(cutoff_min, cutoff_min + cutoff_range) => global float cutoff_ref;
+// the patch 
+SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Pan2 pan_ref => dac;
+buf_ref => l_ref => rev_ref => FFT fft1;
+// load the file
+filename => buf_ref.read;
+velocity => buf_ref.gain;
+
 
 fun void ApplyGlobals_ref()
 {
     while( true )
     {
+        if (PLAYRADIO == 0) { // play both; play ref on the left
+            -1 => pan_ref.pan;
+            velocity => buf_ref.gain;
+        }
+        else if (PLAYRADIO == 1) { // play ref
+            0 => pan_ref.pan;
+            velocity => buf_ref.gain;
+        } 
+        else if (PLAYRADIO == 2) { // play user
+            0 => buf_ref.gain;
+        }
+
         10::ms => now;
-        b_ref.noteOn( pitch_ref, velocity );
-        reverb_ref => rev_ref.mix;
-        lowpass_ref => l_ref.freq;
-        cutoff_ref => b_ref.cutoff;
     }
 }
 spork ~ ApplyGlobals_ref();
+
+fun void loop_ref() {
+    while( true )
+    {
+        Math.random2f(reverb_min, reverb_min + reverb_range) => global float reverb_ref;
+        Math.random2f(lpf_min, lpf_min + lpf_range) => global float lowpass_ref;
+        reverb_ref => rev_ref.mix;
+        lowpass_ref => l_ref.freq;
+
+        0 => buf_ref.pos;
+        buf_ref.samples()::samp => now;
+    }
+}
+spork ~loop_ref();
 
 
 //------------------------------------------------------------------------------
 // user
 //------------------------------------------------------------------------------
-BandWeeow b => LPF l => JCRev rev => dac.right;
-b => l => rev => FFT fft2;
+// the patch 
+SndBuf buf_user => LPF l_user => JCRev rev_user => Pan2 pan_user => dac;
+buf_user => l_user => rev_user => FFT fft2;
+// load the file
+filename => buf_user.read;
+velocity => buf_user.gain;
 
-velocity => b.gain;
-fun void ApplyGlobals()
+fun void ApplyGlobals_user()
 {
     while( true )
     {
+        reverb_min + reverb_range * SLIDER2 => rev_user.mix;
+        lpf_min + lpf_range * SLIDER3 => l_user.freq;
+
+        if (PLAYRADIO == 0) { // play both; play user on the right
+            1 => pan_user.pan;
+            velocity => buf_user.gain;
+        }
+        else if (PLAYRADIO == 1) { // play ref
+            0 => buf_user.gain;
+        } 
+        else if (PLAYRADIO == 2) { // play user
+            0 => pan_user.pan;
+            velocity => buf_user.gain;
+        }
+
         10::ms => now;
-        b.noteOn( (pitch_min + pitch_range * SLIDER1) $ int, velocity);
-        reverb_min + reverb_range * SLIDER2 => rev.mix;
-        lpf_min + lpf_range * SLIDER3 => l.freq;
-        cutoff_min + cutoff_range * SLIDER4 => b.cutoff;
     }
 }
-spork ~ ApplyGlobals();
+spork ~ ApplyGlobals_user();
+
+fun void loop_user() {
+    while( true )
+    {
+        0 => buf_user.pos;
+        buf_user.samples()::samp => now;
+    }
+}
+spork ~loop_user();
 
 
 //------------------------------------------------------------------------------

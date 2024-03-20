@@ -20,6 +20,12 @@ const serverFilesToPreload = [
     { 
         serverFilename: "./earTrainer2.ck", virtualFilename: "earTrainer2.ck" 
     },
+    { 
+        serverFilename: "./PFv2.wav", virtualFilename: "PFv2.wav" 
+    },
+    { 
+        serverFilename: "./93.wav", virtualFilename: "93.wav" 
+    },
 
 ]
 
@@ -27,13 +33,6 @@ async function startChuck()
 {
     buttonDesc.innerHTML = "Loading...";
     window.theChuck ??= await Chuck.init(serverFilesToPreload);
-    // Mic
-    // navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    //     .then((stream) =>
-    //     {
-    //         const source = theChuck.context.createMediaStreamSource(stream);
-    //         source.connect(theChuck);
-    //     });
     // Override print
     theChuck.chuckPrint = function (text) {
         if (text.startsWith("window: "))
@@ -50,6 +49,7 @@ var SLIDER2 = 0;
 var SLIDER3 = 0;
 var SLIDER4 = 0;
 var DIFF = 0;
+var PLAYRADIO = 0;
 
 // MAIN BUTTON
 mainButton.addEventListener('click', async () =>
@@ -90,7 +90,7 @@ mainButton.addEventListener('click', async () =>
         theChuck.setFloat("SLIDER1", SLIDER1);
         theChuck.setFloat("SLIDER2", SLIDER2);
         theChuck.setFloat("SLIDER3", SLIDER3);
-        theChuck.setFloat("SLIDER4", SLIDER1);
+        theChuck.setFloat("SLIDER4", SLIDER4);
         
         state = 0;
         showStop();
@@ -98,7 +98,12 @@ mainButton.addEventListener('click', async () =>
 
         var timerId = setInterval(async ()=> {
             DIFF = await theChuck.getFloat("DIFF");
-            document.getElementById("diff").innerHTML = DIFF; 
+            if (PLAYRADIO == 1) {
+                document.getElementById("diff").innerHTML = ""; 
+            }
+            else {
+                document.getElementById("diff").innerHTML = DIFF; 
+            }
         }, 100);
     }
 });
@@ -107,12 +112,20 @@ const buttonDesc = document.getElementById('buttonDesc');
 function showPlay() 
 {
     mainButton.innerHTML = `<i class="fas fa-play"></i>`;
-    mainButton.style.backgroundColor = "#3c3"
+    mainButton.style.backgroundColor = "#3c3";
     buttonDesc.innerHTML = "Play, headphones recommended";
 }
 function showStop() {
     mainButton.innerHTML = `<i class="fas fa-stop"></i>`;
-    mainButton.style.backgroundColor = "#f33"
+    mainButton.style.backgroundColor = "#f33";
     mainButton.classList.remove("clickMe");
     buttonDesc.innerHTML = "";
 }
+
+const radioForm = document.getElementById("playRadio");
+const radioHandler = (event) => {
+    PLAYRADIO =  Number(radioForm["playing"].value)
+    window.theChuck.setInt("PLAYRADIO", PLAYRADIO);
+    // console.log("Radio clicked value", radioForm["playing"].value);
+};
+radioForm.addEventListener("change", radioHandler);

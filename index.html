@@ -17,19 +17,21 @@
 
 </head>
 
+<script>
+    function radioClick(value) {
+        theChuck.setFloat("PLAYRADIO", value);
+        console.log(value);
+    }
+</script>
+
 <body>
     <!-- <script type="text/javascript" src="./diff.js"></script> -->
     <canvas id="canvas1" class="show"></canvas>
 
     <div class="container">
-        <h1 class="title">Recreate the Synth!</h1>
+        <h1 class="title">Recreate the Mix!</h1>
         <h1 class="diff_display" id="diff"></h1>
-
-        <div class="slidecontainer slider1">
-            <input type="range" min="0" max="100" value="0" class="slider" id="slider1">
-            <label for="control">Pitch</label><br />
-        </div>
-
+        
         <div class="buttonWrapper">
             <p id="buttonDesc">Click to load system</p>
             <button id="mainButton" class="clickMe">
@@ -37,19 +39,41 @@
             </button>
         </div>
 
+        <div class="radioContainer">
+            <form id='playRadio'>
+                <label class="radioOption">Both mixes
+                    <input type="radio" checked="checked" name="playing" value="0">
+                    <span class="checkmark"></span>
+                </label>
+                <label class="radioOption">Ref mix
+                    <input type="radio" name="playing" value="1">
+                    <span class="checkmark"></span>
+                </label>
+                  <label class="radioOption">User mix
+                    <input type="radio" name="playing" value="2">
+                    <span class="checkmark"></span>
+                </label>
+            </form>
+        </div>
+    
+        <div class="slidecontainer slider1">
+            <input type="range" min="0" max="100" value="0" class="slider" id="slider1">
+            <label for="control">Pitch</label><br /><br />
+        </div>
+
         <div class="slidecontainer slider2">
             <input type="range" min="0" max="100" value="0" class="slider" id="slider2">
-            <label for="control">Reverb</label><br />
+            <label for="control">Reverb</label><br /><br />
         </div>
     
         <div class="slidecontainer slider3">
             <input type="range" min="0" max="100" value="0" class="slider" id="slider3">
-            <label for="control">Lowpass</label><br />
+            <label for="control">Lowpass</label><br /><br />
         </div>
     
         <div class="slidecontainer slider4">
             <input type="range" min="0" max="100" value="0" class="slider" id="slider4">
-            <label for="control">Cutoff</label><br />
+            <label for="control">Cutoff</label><br /><br />
         </div>
     </div>
 
