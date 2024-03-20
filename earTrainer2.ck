@@ -8,20 +8,26 @@ global float SLIDER1;
 global float SLIDER2;
 global float SLIDER3;
 global float SLIDER4;
+global float SLIDER5;
 global float DIFF;
 global int PLAYRADIO;
 
 // things that are the same for ref and user
 0.1 => float velocity;
 
-0 => float reverb_min;
-0.3 => float reverb_range;
-
-1000 => float lpf_min;
+100 => float lpf_min;
 15000 => float lpf_range;
 
+100 => float rsn_freq_min;
+
+0.1 => float rsn_q_min;
+0.5 => float rsn_q_range;
+
+0 => float reverb_min;
+0.2 => float reverb_range;
+
 1 => float compress_min;
-9 => float compress_range;
+15 => float compress_range;
 
 me.dir() + "93.wav" => string filename;
 
@@ -31,14 +37,20 @@ me.dir() + "93.wav" => string filename;
 //------------------------------------------------------------------------------
 // sound file to load; me.dir() returns location of this file
 
-// the patch 
-SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
-buf_ref => l_ref => rev_ref => d_ref => FFT fft1;
+// the patch for playing
+SndBuf buf_ref => LPF l_ref => ResonZ rsn_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
+// for analysis
+SndBuf buf_ref2 => l_ref => rev_ref => d_ref => FFT fft1;
+
 // load the file
 filename => buf_ref.read;
+filename => buf_ref2.read;
+
+// set unchangeable parameters
 velocity => buf_ref.gain;
+velocity => buf_ref2.gain;
 d_ref.compress();
-d_ref.thresh(0.3);
+d_ref.thresh(0.1);
 
 fun void ApplyGlobals_ref()
 {
@@ -61,19 +73,25 @@ fun void ApplyGlobals_ref()
 }
 spork ~ ApplyGlobals_ref();
 
+fun float random_param(float min, float range) {
+    return  Math.random2f(min, min + range);
+}
+
 fun void loop_ref() {
     while( true )
     {
-        Math.random2f(reverb_min, reverb_min + reverb_range) => float reverb_ref;
-        Math.random2f(lpf_min, lpf_min + lpf_range) => float lowpass_ref;
-        Math.random2f(compress_min, compress_min + compress_range) => float compress_ref;
+        // get new parameters for the new loop
+        random_param(lpf_min, lpf_range) => l_ref.freq;
+        Math.pow(Math.randomf(), 4) => float rsn_temp;
+        rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => rsn_ref.freq;
+        random_param(rsn_q_min, rsn_q_range) => rsn_ref.Q;
+        random_param(reverb_min, reverb_range) => rev_ref.mix;
+        random_param(compress_min, compress_range) => d_ref.ratio;
 
-        reverb_ref => rev_ref.mix;
-        lowpass_ref => l_ref.freq;
-        compress_ref => d_ref.ratio;
-
+        // loop bus
         0 => buf_ref.pos;
-        buf_ref.samples()::samp => now;
+        0 => buf_ref2.pos;
+        buf_ref.length() => now;
     }
 }
 spork ~loop_ref();
@@ -82,22 +100,31 @@ spork ~loop_ref();
 //------------------------------------------------------------------------------
 // user
 //------------------------------------------------------------------------------
-// the patch 
-SndBuf buf_user => LPF l_user => JCRev rev_user => Dyno d_user => Pan2 pan_user => dac;
-buf_user => l_user => rev_user => d_user => FFT fft2;
+// the patch for playing
+SndBuf buf_user => LPF l_user => ResonZ rsn_user => JCRev rev_user => Dyno d_user => Pan2 pan_user => dac;
+// for analysis
+SndBuf buf_user2 => l_user => rsn_user => rev_user => d_user => FFT fft2;
+
 // load the file
 filename => buf_user.read;
+filename => buf_user2.read;
+
+// set unchangeable paramters
 velocity => buf_user.gain;
+velocity => buf_user2.gain;
 d_user.compress();
-d_user.thresh(0.3);
+d_user.thresh(0.1);
 
 fun void ApplyGlobals_user()
 {
     while( true )
     {
-        reverb_min + reverb_range * SLIDER2 => rev_user.mix;
-        lpf_min + lpf_range * SLIDER3 => l_user.freq;
-        compress_min + compress_range * SLIDER4 => d_user.ratio;
+        lpf_min + lpf_range * SLIDER1 => l_user.freq;
+        Math.pow(SLIDER2, 4)=> float slide2_temp;
+        rsn_freq_min + (l_user.freq() - rsn_freq_min) * slide2_temp => rsn_user.freq;
+        rsn_q_min + (l_user.freq() - rsn_freq_min) * SLIDER3 => rsn_user.Q;
+        reverb_min + reverb_range * SLIDER4 => rev_user.mix;
+        compress_min + compress_range * SLIDER5 => d_user.ratio;
 
         if (PLAYRADIO == 0) { // play both; play user on the right
             1 => pan_user.pan;
@@ -120,7 +147,8 @@ fun void loop_user() {
     while( true )
     {
         0 => buf_user.pos;
-        buf_user.samples()::samp => now;
+        0 => buf_user2.pos;
+        buf_ref.length() => now;
     }
 }
 spork ~loop_user();

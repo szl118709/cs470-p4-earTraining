@@ -42,6 +42,11 @@ slider4.oninput = function() {
         theChuck.setFloat("SLIDER4", this.value/100.0);
     }
 } 
+slider4.oninput = function() {
+    if (theChuck) {
+        theChuck.setFloat("SLIDER5", this.value/100.0);
+    }
+} 
 
 function generateParticle(text)
 {
