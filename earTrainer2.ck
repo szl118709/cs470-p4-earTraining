@@ -72,7 +72,7 @@ velocity => const_gain_ref.gain;
 d_ref.compress();
 d_ref.thresh(0.5);
 mod_ref.randomGain(0);
-mod_ref.vibratoGain(velocity * 4);
+mod_ref.vibratoGain(velocity * 6);
 
 fun void ApplyGlobals_ref()
 {
@@ -173,7 +173,7 @@ velocity => const_gain_user.gain;
 d_user.compress();
 d_user.thresh(0.5);
 mod_user.randomGain(0);
-mod_user.vibratoGain(velocity * 4);
+mod_user.vibratoGain(velocity * 7);
 
 fun void ApplyGlobals_user()
 {

@@ -4,7 +4,7 @@ ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
 let particleArray = [];
-let size_multiplier = 0.5;
+let screen_multiplier = 0.5;
 let opacity_multiplier = 1;
 
 // Create constructor function
@@ -20,6 +20,8 @@ function Particle(x, y, directionX, directionY, size, r, g, b, a, currTime)
     this.g = g;
     this.b = b;
     this.a = a;
+    this.color_multiplier = 1;
+    this.size_multiplier = 1;
     this.currTime = currTime;
 }
 
@@ -27,21 +29,22 @@ function Particle(x, y, directionX, directionY, size, r, g, b, a, currTime)
 Particle.prototype.draw = function ()
 {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.currSize, 0, Math.PI * 2, false);
-    ctx.fillStyle = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a * opacity_multiplier + ')';;
+    ctx.arc(this.x, this.y, this.currSize * this.size_multiplier, 0, Math.PI * 2, false);
+    ctx.fillStyle = 'rgba(' + this.r + ',' + this.g * this.color_multiplier + ',' + 
+                    this.b + ',' + this.a * opacity_multiplier + ')';;
     ctx.fill();
 }
 
 // Move particles
 Particle.prototype.update = function (number)
 {
-    if (this.x + this.currSize > canvas.width * (0.5 + size_multiplier) || 
-        this.x - this.currSize < canvas.width * (0.5 - size_multiplier))
+    if (this.x + this.currSize * this.size_multiplier > canvas.width * (0.5 + screen_multiplier) || 
+        this.x - this.currSize * this.size_multiplier < canvas.width * (0.5 - screen_multiplier))
     {
         this.directionX = -this.directionX;
     }
-    if (this.y + this.currSize > canvas.height * (0.5 + size_multiplier) || 
-        this.y - this.currSize < canvas.height * (0.5 - size_multiplier))
+    if (this.y + this.currSize * this.size_multiplier > canvas.height * (0.5 + screen_multiplier) || 
+        this.y - this.currSize * this.size_multiplier < canvas.height * (0.5 - screen_multiplier))
     {
         this.directionY = -this.directionY;
     }
@@ -119,11 +122,30 @@ function initCanvas()
 
 function update_slider1(val, checked) {
     if (checked) {
-        size_multiplier = val / 2.0;
+        screen_multiplier = Math.max(val / 2.0, 0.1);
     }
 }
 
-function update_slider2(val) {
+var modTimerId;
+function update_slider2(val, checked) {
+    clearInterval(modTimerId);
+    if (checked) {
+        modTimerId = setInterval(async ()=> {
+            for (let i = 0; i < particleArray.length; i++)
+            {
+                if (i % 2) {
+                    particleArray[i].color_multiplier = 0.6 + Math.random()*0.4;
+                }
+            }
+        }, 500 / (val + 1));
+    }
+    else {
+        clearInterval(modTimerId);
+        for (let i = 0; i < particleArray.length; i++)
+        {
+            particleArray[i].color_multiplier = 1;
+        }
+    }
 
 }
 
@@ -132,6 +154,34 @@ function update_slider3(val, checked) {
         val = 1 - val;
         opacity_multiplier = Math.max(val, 0.2);
     }
+}
+
+var sizeimerId;
+function update_slider4(val, checked) {
+    clearInterval(sizeimerId);
+    if (checked) {
+        sizeimerId = setInterval(async ()=> {
+            for (let i = 0; i < particleArray.length; i++)
+            {
+                if (i % 2 == 0) {
+                    if (particleArray[i].size_multiplier == 1) {
+                        particleArray[i].size_multiplier = 0.9 - val / 5;
+                    }
+                    else {
+                        particleArray[i].size_multiplier = 1;
+                    }
+                }
+            }
+        }, 60000/106);
+    }
+    else {
+        clearInterval(sizeimerId);
+        for (let i = 0; i < particleArray.length; i++)
+        {
+            particleArray[i].size_multiplier = 1;
+        }
+    }
+
 }
 
 // MAIN

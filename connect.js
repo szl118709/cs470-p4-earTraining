@@ -1,5 +1,3 @@
-const grid = document.getElementById('grid');
-
 // Sliders
 var slider1 = document.getElementById("slider1");
 var slider2 = document.getElementById("slider2");
@@ -22,6 +20,7 @@ slider2.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER2", this.value/100.0);
     }
+    update_slider2(this.value/100.0, switch2.checked);
 } 
 slider3.oninput = function() {
     if (theChuck) {
@@ -33,6 +32,7 @@ slider4.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER4", this.value/100.0);
     }
+    update_slider4(this.value/100.0, switch4.checked);
 } 
 
 const switch1 = document.getElementById("switch1");
@@ -57,9 +57,11 @@ switch2.oninput = function() {
         if (this.checked) {
             theChuck.setFloat("SWITCH2", 1);
             theChuck.setFloat("SLIDER2", slider2.value/100.0);
+            update_slider2(slider2.value/100.0, true);
         }
         else {
             theChuck.setFloat("SWITCH2", 0);
+            update_slider2(slider2.value/100.0, false);
         }
     }
 } 
@@ -81,9 +83,11 @@ switch4.oninput = function() {
         if (this.checked) {
             theChuck.setFloat("SWITCH4", 1);
             theChuck.setFloat("SLIDER4", slider4.value/100.0);
+            update_slider4(slider4.value/100.0, true);
         }
         else {
             theChuck.setFloat("SWITCH4", 0);
+            update_slider4(0, false);
         }
     }
 } 
