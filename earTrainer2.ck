@@ -8,20 +8,28 @@ global float SLIDER1;
 global float SLIDER2;
 global float SLIDER3;
 global float SLIDER4;
-global float SLIDER5;
+0 => global float SWITCH1;
+0 => global float SWITCH2;
+0 => global float SWITCH3;
+0 => global float SWITCH4;
 global float DIFF;
 global int PLAYRADIO;
+
+global float REF1;
+global float REF2;
+global float REF3;
+global float REF4;
+
+global float PRINTED;
+global float TEST;
 
 // things that are the same for ref and user
 0.1 => float velocity;
 
 100 => float lpf_min;
-15000 => float lpf_range;
+5000 => float lpf_range;
 
 100 => float rsn_freq_min;
-
-0.1 => float rsn_q_min;
-0.5 => float rsn_q_range;
 
 0 => float reverb_min;
 0.2 => float reverb_range;
@@ -68,6 +76,32 @@ fun void ApplyGlobals_ref()
             0 => buf_ref.gain;
         }
 
+        if (SWITCH1 == 1) {
+            REF1 => l_ref.freq;
+        }
+        else {
+            lpf_range => l_ref.freq;
+        }
+        if (SWITCH2 == 1) {
+            1 => rsn_ref.Q;
+            REF2 => rsn_ref.freq;
+        }
+        else {
+            0 => rsn_ref.Q;
+        }
+        if (SWITCH3 == 1) {
+            REF3 => rev_ref.mix;
+        }
+        else {
+            0 => rev_ref.mix;
+        }
+        if (SWITCH4 == 1) {
+            REF4 => d_ref.ratio;
+        }
+        else {
+            1 => d_ref.ratio;
+        }
+
         10::ms => now;
     }
 }
@@ -81,17 +115,19 @@ fun void loop_ref() {
     while( true )
     {
         // get new parameters for the new loop
-        random_param(lpf_min, lpf_range) => l_ref.freq;
+        random_param(lpf_min, lpf_range) => REF1;
         Math.pow(Math.randomf(), 4) => float rsn_temp;
-        rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => rsn_ref.freq;
-        random_param(rsn_q_min, rsn_q_range) => rsn_ref.Q;
-        random_param(reverb_min, reverb_range) => rev_ref.mix;
-        random_param(compress_min, compress_range) => d_ref.ratio;
+        rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => REF2;
+        random_param(reverb_min, reverb_range) => REF3;
+        random_param(compress_min, compress_range) => REF4;
+
+        0 => PRINTED;
 
         // loop bus
         0 => buf_ref.pos;
         0 => buf_ref2.pos;
-        buf_ref.length() => now;
+        // buf_ref.length() => now;
+        8::second => now;
     }
 }
 spork ~loop_ref();
@@ -119,12 +155,6 @@ fun void ApplyGlobals_user()
 {
     while( true )
     {
-        lpf_min + lpf_range * SLIDER1 => l_user.freq;
-        Math.pow(SLIDER2, 4)=> float slide2_temp;
-        rsn_freq_min + (l_user.freq() - rsn_freq_min) * slide2_temp => rsn_user.freq;
-        rsn_q_min + (l_user.freq() - rsn_freq_min) * SLIDER3 => rsn_user.Q;
-        reverb_min + reverb_range * SLIDER4 => rev_user.mix;
-        compress_min + compress_range * SLIDER5 => d_user.ratio;
 
         if (PLAYRADIO == 0) { // play both; play user on the right
             1 => pan_user.pan;
@@ -134,8 +164,37 @@ fun void ApplyGlobals_user()
             0 => buf_user.gain;
         } 
         else if (PLAYRADIO == 2) { // play user
-            0 => pan_user.pan;
+            -1 => pan_user.pan;
             velocity => buf_user.gain;
+        }
+
+        if (SWITCH1 == 1) {
+            lpf_min + lpf_range * SLIDER1 => l_user.freq;
+            l_user.freq() => TEST;
+        }
+        else {
+            lpf_range => l_user.freq;
+        }
+        200 => l_user.freq;
+        if (SWITCH2 == 1) {
+            1 => rsn_user.Q;
+            Math.pow(SLIDER2, 4)=> float slide2_temp;
+            rsn_freq_min + (l_user.freq() - rsn_freq_min) * slide2_temp => rsn_user.freq;
+        }
+        else {
+            0 => rsn_user.Q;
+        }
+        if (SWITCH3 == 1) {
+            reverb_min + reverb_range * SLIDER3 => rev_user.mix;
+        }
+        else {
+            0 => rev_user.mix;
+        }
+        if (SWITCH4 == 1) {
+            compress_min + compress_range * SLIDER4 => d_user.ratio;
+        }
+        else {
+            1 => d_user.ratio;
         }
 
         10::ms => now;
@@ -148,7 +207,8 @@ fun void loop_user() {
     {
         0 => buf_user.pos;
         0 => buf_user2.pos;
-        buf_ref.length() => now;
+        // buf_ref.length() => now;
+        8::second => now;
     }
 }
 spork ~loop_user();

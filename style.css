@@ -109,11 +109,14 @@ body
     position: absolute;
     bottom: 0;
     left: 10%;
+    right: 10%;
     width: 80%;
-    height: 45%;
+    height: 40%;
 }
 #slider1
 {
+    position: relative;
+    left: 40px;
     width: 100%;
 }
 
@@ -122,11 +125,14 @@ body
     position: absolute;
     bottom: 0;
     left: 10%;
+    right: 10%;
     width: 80%;
-    height: 36%;
+    height: 30%;
 }
 #slider2
 {
+    position: relative;
+    left: 40px;
     width: 100%;
 }
 
@@ -135,38 +141,31 @@ body
     position: absolute;
     bottom: 0;
     left: 10%;
+    right: 10%;
     width: 80%;
-    height: 27%;
+    height: 20%;
 }
 #slider3
 {
+    position: relative;
+    left: 40px;
     width: 100%;
 }
 
+/* bottom slider */
 .slidecontainer.slider4
 {
     position: absolute;
     bottom: 0;
     left: 10%;
+    right: 10%;
     width: 80%;
-    height: 18%;
+    height: 10%;
 }
 #slider4
 {
-    width: 100%;
-}
-
-/* bottom slider */
-.slidecontainer.slider5
-{
-    position: absolute;
-    bottom: 0;
-    left: 10%;
-    width: 80%;
-    height: 9%;
-}
-#slider5
-{
+    position: relative;
+    left: 40px;
     width: 100%;
 }
 
@@ -228,7 +227,7 @@ label
   
 /* When the radio button is checked, add a blue background */
 .radioOption input:checked ~ .checkmark {
-    background-color: #2196F3;
+    background-color: #0374ff;
 }
   
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -251,6 +250,70 @@ label
     height: 8px;
     border-radius: 50%;
     background: white;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: absolute;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+  left: 0
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.switchSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.switchSlider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .switchSlider {
+  background-color: #0374ff;
+}
+
+input:focus + .switchSlider {
+  box-shadow: 0 0 1px #0374ff;
+}
+
+input:checked + .switchSlider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+/* Rounded sliders */
+.switchSlider.round {
+  border-radius: 17px;
+}
+
+.switchSlider.round:before {
+  border-radius: 50%;
 }
 
 /* mobile media query */

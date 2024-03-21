@@ -104,6 +104,20 @@ mainButton.addEventListener('click', async () =>
             else {
                 document.getElementById("diff").innerHTML = DIFF; 
             }
+
+            // print answer
+            var printed = await theChuck.getFloat("PRINTED");
+            if (!printed) {
+                var temp = await theChuck.getFloat("REF1");
+                console.log("REF1 = ", temp);
+                temp = await theChuck.getFloat("REF2");
+                console.log("REF2 = ", temp);
+                temp = await theChuck.getFloat("REF3");
+                console.log("REF3 = ", temp);
+                temp = await theChuck.getFloat("REF4");
+                console.log("REF4 = ", temp);
+            }
+            theChuck.setFloat("PRINTED", 1);
         }, 100);
     }
 });

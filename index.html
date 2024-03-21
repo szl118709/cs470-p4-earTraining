@@ -17,13 +17,6 @@
 
 </head>
 
-<script>
-    function radioClick(value) {
-        theChuck.setFloat("PLAYRADIO", value);
-        console.log(value);
-    }
-</script>
-
 <body>
     <!-- <script type="text/javascript" src="./diff.js"></script> -->
     <canvas id="canvas1" class="show"></canvas>
@@ -57,26 +50,37 @@
         </div>
     
         <div class="slidecontainer slider1">
+            <label class="switch">
+                <input type="checkbox" id="switch1">
+                <span class="switchSlider round"></span>
+            </label>
             <input type="range" min="0" max="100" value="0" class="slider" id="slider1">
             <label for="control">Lowpass</label><br /><br />
         </div>
 
         <div class="slidecontainer slider2">
+            <label class="switch">
+                <input type="checkbox" id="switch2">
+                <span class="switchSlider round"></span>
+            </label>
             <input type="range" min="0" max="100" value="0" class="slider" id="slider2">
             <label for="control">Resonance freq</label><br /><br />
         </div>
 
         <div class="slidecontainer slider3">
-            <input type="range" min="0" max="100" value="0" class="slider" id="slider2">
-            <label for="control">Resonance q</label><br /><br />
-        </div>
-    
-        <div class="slidecontainer slider4">
+            <label class="switch">
+                <input type="checkbox" id = "switch3">
+                <span class="switchSlider round"></span>
+            </label>
             <input type="range" min="0" max="100" value="0" class="slider" id="slider3">
             <label for="control">Reverb</label><br /><br />
         </div>
     
-        <div class="slidecontainer slider5">
+        <div class="slidecontainer slider4">
+            <label class="switch">
+                <input type="checkbox" id="switch4">
+                <span class="switchSlider round"></span>
+            </label>
             <input type="range" min="0" max="100" value="0" class="slider" id="slider4">
             <label for="control">Compression</label><br /><br />
         </div>
