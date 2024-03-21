@@ -27,12 +27,12 @@ global float TEST;
 0.1 => float velocity;
 
 100 => float lpf_min;
-5000 => float lpf_range;
+15000 => float lpf_range;
 
 100 => float rsn_freq_min;
 
 0 => float reverb_min;
-0.2 => float reverb_range;
+0.3 => float reverb_range;
 
 1 => float compress_min;
 15 => float compress_range;
@@ -46,7 +46,9 @@ me.dir() + "93.wav" => string filename;
 // sound file to load; me.dir() returns location of this file
 
 // the patch for playing
-SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
+Pan2 pan_ref;
+SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Gain gl_ref => dac.left;
+buf_ref => l_ref => rev_ref => d_ref => Gain gr_ref => dac.right;
 // for analysis
 SndBuf buf_ref2 => l_ref => rev_ref => d_ref => FFT fft1;
 
@@ -57,6 +59,8 @@ filename => buf_ref2.read;
 // set unchangeable parameters
 velocity => buf_ref.gain;
 velocity => buf_ref2.gain;
+velocity => gl_ref.gain;
+velocity => gr_ref.gain;
 d_ref.compress();
 d_ref.thresh(0.1);
 
@@ -91,15 +95,16 @@ fun void ApplyGlobals_ref()
         }
         
         if (PLAYRADIO == 0) { // play both; play ref on the left
-            -1 => pan_ref.pan;
-            velocity => buf_ref.gain;
+            velocity => gl_ref.gain;
+            0 => gr_ref.gain;
         }
         else if (PLAYRADIO == 1) { // play ref
-            0 => pan_ref.pan;
-            velocity => buf_ref.gain;
+            velocity => gl_ref.gain;
+            velocity => gr_ref.gain;
         } 
         else if (PLAYRADIO == 2) { // play user
-            0 => buf_ref.gain;
+            0 => gl_ref.gain;
+            0 => gr_ref.gain;
         }
 
         10::ms => now;
@@ -115,9 +120,10 @@ fun void loop_ref() {
     while( true )
     {
         // get new parameters for the new loop
-        random_param(lpf_min, lpf_range) => REF1;
-        Math.pow(Math.randomf(), 4) => float rsn_temp;
-        rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => REF2;
+        Math.pow(Math.randomf(), 2) => float l_temp;
+        lpf_min + lpf_range * l_temp => REF1;
+        // Math.pow(Math.randomf(), 4) => float rsn_temp;
+        // rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => REF2;
         random_param(reverb_min, reverb_range) => REF3;
         random_param(compress_min, compress_range) => REF4;
 
@@ -137,9 +143,10 @@ spork ~loop_ref();
 // user
 //------------------------------------------------------------------------------
 // the patch for playing
-SndBuf buf_user => LPF l_user => ResonZ rsn_user => JCRev rev_user => Dyno d_user => Pan2 pan_user => dac;
+SndBuf buf_user => LPF l_user => JCRev rev_user => Dyno d_user => Gain gl_user => dac.left;
+buf_user => l_user => rev_user => d_user => Gain gr_user => dac.right;
 // for analysis
-SndBuf buf_user2 => l_user => rsn_user => rev_user => d_user => FFT fft2;
+SndBuf buf_user2 => l_user => rev_user => d_user => FFT fft2;
 
 // load the file
 filename => buf_user.read;
@@ -148,6 +155,8 @@ filename => buf_user2.read;
 // set unchangeable paramters
 velocity => buf_user.gain;
 velocity => buf_user2.gain;
+velocity => gl_user.gain;
+velocity => gr_user.gain;
 d_user.compress();
 d_user.thresh(0.1);
 
@@ -156,13 +165,12 @@ fun void ApplyGlobals_user()
     while( true )
     {
         if (SWITCH1 == 1) {
-            lpf_min + lpf_range * SLIDER1 => l_user.freq;
-            l_user.freq() => TEST;
+            Math.pow(SLIDER1, 2) => float l_temp;
+            lpf_min + lpf_range * l_temp => l_user.freq;
         }
         else {
             lpf_range => l_user.freq;
         }
-        200 => l_user.freq;
         if (SWITCH2 == 1) {
             // 0.1 => l_user.Q;
         }
@@ -183,15 +191,16 @@ fun void ApplyGlobals_user()
         }
 
         if (PLAYRADIO == 0) { // play both; play user on the right
-            1 => pan_user.pan;
-            velocity => buf_user.gain;
+            0 => gl_user.gain;
+            velocity => gr_user.gain;
         }
         else if (PLAYRADIO == 1) { // play ref
-            0 => buf_user.gain;
+            0 => gl_user.gain;
+            0 => gr_user.gain;
         } 
         else if (PLAYRADIO == 2) { // play user
-            0 => pan_user.pan;
-            velocity => buf_user.gain;
+            velocity => gl_user.gain;
+            velocity => gr_user.gain;
         }
 
         10::ms => now;
