@@ -24,7 +24,6 @@ slider4.value = 0;
 slider1.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER1", this.value/100.0);
-        console.log(theChuck.getFloat("TEST"));
     }
     texture = this.value/100.0;
 } 
@@ -67,7 +66,6 @@ switch1.oninput = function() {
         if (this.checked) {
             theChuck.setFloat("SWITCH1", 1);
             theChuck.setFloat("SLIDER1", slider1.value/100.0);
-            console.log(theChuck.getFloat("TEST"));
         }
         else {
             theChuck.setFloat("SWITCH1", 0);
@@ -88,13 +86,11 @@ switch2.oninput = function() {
 switch3.oninput = function() {
     if (theChuck) {
         if (this.checked) {
-            console.log(1);
             theChuck.setFloat("SWITCH3", 1);
             theChuck.setFloat("SLIDER3", slider3.value/100.0);
         }
         else {
             theChuck.setFloat("SWITCH3", 0);
-            console.log(2);
         }
     }
 } 

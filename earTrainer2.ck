@@ -20,19 +20,22 @@ global float REF2;
 global float REF3;
 global float REF4;
 
+
+
 global float PRINTED;
 global float TEST;
 
 // things that are the same for ref and user
-0.1 => float velocity;
+0.2 => float velocity;
 
 100 => float lpf_min;
 15000 => float lpf_range;
 
-100 => float rsn_freq_min;
+0 => float mod_min;
+5 => float mod_range;
 
 0 => float reverb_min;
-0.3 => float reverb_range;
+0.2 => float reverb_range;
 
 1 => float compress_min;
 15 => float compress_range;
@@ -46,11 +49,15 @@ me.dir() + "93.wav" => string filename;
 // sound file to load; me.dir() returns location of this file
 
 // the patch for playing
-Pan2 pan_ref;
 SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Gain gl_ref => dac.left;
 buf_ref => l_ref => rev_ref => d_ref => Gain gr_ref => dac.right;
+3 => gl_ref.op;
+3 => gr_ref.op;
+Modulate mod_ref => gl_ref;
+mod_ref => gr_ref;
 // for analysis
-SndBuf buf_ref2 => l_ref => rev_ref => d_ref => FFT fft1;
+SndBuf buf_ref2 => l_ref => rev_ref => d_ref => Gain const_gain_ref => FFT fft1;
+mod_ref => const_gain_ref;
 
 // load the file
 filename => buf_ref.read;
@@ -61,8 +68,11 @@ velocity => buf_ref.gain;
 velocity => buf_ref2.gain;
 velocity => gl_ref.gain;
 velocity => gr_ref.gain;
+velocity => const_gain_ref.gain;
 d_ref.compress();
-d_ref.thresh(0.1);
+d_ref.thresh(0.5);
+mod_ref.randomGain(0);
+mod_ref.vibratoGain(velocity * 4);
 
 fun void ApplyGlobals_ref()
 {
@@ -70,25 +80,28 @@ fun void ApplyGlobals_ref()
     {
 
         if (SWITCH1 == 1) {
-            REF1 => l_ref.freq;
+            lpf_min + lpf_range * Math.pow(REF1, 2) => l_ref.freq;
         }
         else {
             lpf_range => l_ref.freq;
         }
         if (SWITCH2 == 1) {
-            // 0.1 => l_ref.Q;
+            3 => gl_ref.op;
+            3 => gr_ref.op;
+            mod_min + mod_range * REF2 => mod_ref.vibratoRate;
         }
         else {
-            // 0 => l_ref.Q;
+            1 => gl_ref.op;
+            1 => gr_ref.op;
         }
         if (SWITCH3 == 1) {
-            REF3 => rev_ref.mix;
+            reverb_min + reverb_range * REF3 => rev_ref.mix;
         }
         else {
             0 => rev_ref.mix;
         }
         if (SWITCH4 == 1) {
-            REF4 => d_ref.ratio;
+            compress_min + compress_range * REF4 => d_ref.ratio;
         }
         else {
             1 => d_ref.ratio;
@@ -112,28 +125,22 @@ fun void ApplyGlobals_ref()
 }
 spork ~ ApplyGlobals_ref();
 
-fun float random_param(float min, float range) {
-    return  Math.random2f(min, min + range);
-}
 
 fun void loop_ref() {
     while( true )
     {
         // get new parameters for the new loop
-        Math.pow(Math.randomf(), 2) => float l_temp;
-        lpf_min + lpf_range * l_temp => REF1;
-        // Math.pow(Math.randomf(), 4) => float rsn_temp;
-        // rsn_freq_min + (l_ref.freq() - rsn_freq_min) * rsn_temp => REF2;
-        random_param(reverb_min, reverb_range) => REF3;
-        random_param(compress_min, compress_range) => REF4;
+        Math.randomf() => REF1;
+        Math.randomf() => REF2;
+        Math.randomf() => REF3;
+        Math.randomf() => REF4;
 
         0 => PRINTED;
 
         // loop bus
         0 => buf_ref.pos;
         0 => buf_ref2.pos;
-        // buf_ref.length() => now;
-        8::second => now;
+        buf_ref.length() => now;
     }
 }
 spork ~loop_ref();
@@ -145,8 +152,13 @@ spork ~loop_ref();
 // the patch for playing
 SndBuf buf_user => LPF l_user => JCRev rev_user => Dyno d_user => Gain gl_user => dac.left;
 buf_user => l_user => rev_user => d_user => Gain gr_user => dac.right;
+3 => gl_user.op;
+3 => gr_user.op;
+Modulate mod_user => gl_user;
+mod_user => gr_user;
 // for analysis
-SndBuf buf_user2 => l_user => rev_user => d_user => FFT fft2;
+SndBuf buf_user2 => l_user => rev_user => d_user => Gain const_gain_user => FFT fft2;
+mod_user => const_gain_user;
 
 // load the file
 filename => buf_user.read;
@@ -157,8 +169,11 @@ velocity => buf_user.gain;
 velocity => buf_user2.gain;
 velocity => gl_user.gain;
 velocity => gr_user.gain;
+velocity => const_gain_user.gain;
 d_user.compress();
-d_user.thresh(0.1);
+d_user.thresh(0.5);
+mod_user.randomGain(0);
+mod_user.vibratoGain(velocity * 4);
 
 fun void ApplyGlobals_user()
 {
@@ -172,10 +187,13 @@ fun void ApplyGlobals_user()
             lpf_range => l_user.freq;
         }
         if (SWITCH2 == 1) {
-            // 0.1 => l_user.Q;
+            3 => gl_user.op;
+            3 => gr_user.op;
+            mod_min + SLIDER2 * mod_range => mod_user.vibratoRate;
         }
         else {
-            // 0 => l_user.Q;
+            1 => gl_user.op;
+            1 => gr_user.op;
         }
         if (SWITCH3 == 1) {
             reverb_min + reverb_range * SLIDER3 => rev_user.mix;
@@ -213,8 +231,7 @@ fun void loop_user() {
     {
         0 => buf_user.pos;
         0 => buf_user2.pos;
-        // buf_ref.length() => now;
-        8::second => now;
+        buf_ref.length() => now;
     }
 }
 spork ~loop_user();

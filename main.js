@@ -81,7 +81,6 @@ mainButton.addEventListener('click', async () =>
         SWITCH3 = await theChuck.getFloat("SWITCH3");
         SWITCH4 = await theChuck.getFloat("SWITCH4");
         PLAYRADIO = await theChuck.getInt("PLAYRADIO");
-
         
         await theChuck.clearChuckInstance();
 
@@ -117,12 +116,13 @@ mainButton.addEventListener('click', async () =>
                 document.getElementById("diff").innerHTML = ""; 
             }
             else {
-                document.getElementById("diff").innerHTML = DIFF; 
+                document.getElementById("diff").innerHTML = Math.round(DIFF); 
             }
 
             // print answer
             var printed = await theChuck.getFloat("PRINTED");
             if (!printed) {
+                console.log("-----");
                 var temp = await theChuck.getFloat("REF1");
                 console.log("REF1 = ", temp);
                 temp = await theChuck.getFloat("REF2");
@@ -155,6 +155,5 @@ const radioForm = document.getElementById("playRadio");
 const radioHandler = (event) => {
     PLAYRADIO = Number(radioForm["playing"].value);
     window.theChuck.setInt("PLAYRADIO", PLAYRADIO);
-    // console.log("Radio clicked value", radioForm["playing"].value);
 };
 radioForm.addEventListener("change", radioHandler);
