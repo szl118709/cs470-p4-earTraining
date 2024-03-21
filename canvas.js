@@ -4,9 +4,11 @@ ctx.canvas.width = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 
 let particleArray = [];
+let size_multiplier = 0.5;
+let opacity_multiplier = 1;
 
 // Create constructor function
-function Particle(x, y, directionX, directionY, size, color, currTime)
+function Particle(x, y, directionX, directionY, size, r, g, b, a, currTime)
 {
     this.x = x;
     this.y = y;
@@ -14,7 +16,10 @@ function Particle(x, y, directionX, directionY, size, color, currTime)
     this.directionY = directionY;
     this.size = size;
     this.currSize = 0;
-    this.color = color;
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
     this.currTime = currTime;
 }
 
@@ -23,40 +28,29 @@ Particle.prototype.draw = function ()
 {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.currSize, 0, Math.PI * 2, false);
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a * opacity_multiplier + ')';;
     ctx.fill();
 }
 
 // Move particles
 Particle.prototype.update = function (number)
 {
-    if (this.x + this.currSize > canvas.width || this.x - this.currSize < 0)
+    if (this.x + this.currSize > canvas.width * (0.5 + size_multiplier) || 
+        this.x - this.currSize < canvas.width * (0.5 - size_multiplier))
     {
         this.directionX = -this.directionX;
     }
-    if (this.y + this.currSize > canvas.height || this.y - this.currSize < 0)
+    if (this.y + this.currSize > canvas.height * (0.5 + size_multiplier) || 
+        this.y - this.currSize < canvas.height * (0.5 - size_multiplier))
     {
         this.directionY = -this.directionY;
     }
-    // Math sin based on time
     this.x += this.directionX;
     this.y += this.directionY;
 
     if (this.currSize < this.size)
     {
         this.currSize += 0.05;
-    }
-
-    // If this is an added particle
-    if (number > 99) 
-    {
-        this.currSize = Math.sin((Date.now() - this.currTime) / 1500) * 30 + 30;
-        // destroy particle if size is too small
-        if (this.currSize < 0.5)
-        {
-            particleArray.splice(number, 1);
-        }
-
     }
 
     this.draw();
@@ -73,10 +67,13 @@ function init()
         let y = Math.random() * (innerHeight - size * 2) + size;
         let directionX = (Math.random() * .4) - .2;
         let directionY = (Math.random() * .4) - .2;
-        let color = 'rgba(' +0 + ',' + Math.random() * 400 + ',255,' +  + Math.random() + ')';
+        let r = 0;
+        let g = Math.random() * 400;
+        let b = 255;
+        let a = Math.random();
         let currTime = Date.now();
 
-        particleArray.push(new Particle(x, y, directionX, directionY, size, color, currTime));
+        particleArray.push(new Particle(x, y, directionX, directionY, size, r, g, b, a, currTime));
     }
 }
 
@@ -92,23 +89,6 @@ function animate()
     }
 }
 
-const gridSize = 14;
-// New custom particle
-function addParticle(xPos, yPos, r, g, b)
-{
-    let size = Math.random() * 20;
-    let x = (xPos / gridSize * (innerWidth - size * 2)) + size;
-    let y = (yPos / gridSize * (innerHeight - size * 2)) + size;
-    // Scale x and y to 90% of the grid size
-    x = (x * .9) + (innerWidth * .05)
-    y = (y * .9) + (innerHeight * .05)
-    let directionX = (Math.random() * .4) - .2;
-    let directionY = (Math.random() * .4) - .2;
-    let color = 'rgba(' + r + ',' + g + ',' + b + ',' + Math.max(Math.random(), .6) + ')';
-    let currTime = Date.now();
-
-    particleArray.push(new Particle(x, y, directionX, directionY, size, color, currTime));
-}
 
 function startCanvas()
 {
@@ -135,6 +115,23 @@ function initCanvas()
         canvas.height = innerHeight;
         init();
     });
+}
+
+function update_slider1(val, checked) {
+    if (checked) {
+        size_multiplier = val / 2.0;
+    }
+}
+
+function update_slider2(val) {
+
+}
+
+function update_slider3(val, checked) {
+    if (checked) {
+        val = 1 - val;
+        opacity_multiplier = Math.max(val, 0.2);
+    }
 }
 
 // MAIN

@@ -1,13 +1,4 @@
 const grid = document.getElementById('grid');
-let texture = 0;
-
-chuckPrint = function (text) {
-    if (text.startsWith("window: "))
-    {
-        text = text.substring(8);
-        generateParticle(text)
-    }
-}
 
 // Sliders
 var slider1 = document.getElementById("slider1");
@@ -25,7 +16,7 @@ slider1.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER1", this.value/100.0);
     }
-    texture = this.value/100.0;
+    update_slider1(this.value/100.0, switch1.checked);
 } 
 slider2.oninput = function() {
     if (theChuck) {
@@ -36,26 +27,13 @@ slider3.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER3", this.value/100.0);
     }
+    update_slider3(this.value/100.0, switch3.checked);
 } 
 slider4.oninput = function() {
     if (theChuck) {
         theChuck.setFloat("SLIDER4", this.value/100.0);
     }
 } 
-
-function generateParticle(text)
-{
-    const num = parseInt(text);
-    // break num into i and j
-    let i = Math.floor(num / gridSize);
-    let j = num % gridSize;
-    let r = 255 * (texture) ;
-    let g = Math.random() * 150; 
-    let b = 255 * ((1-texture));
-
-    // Create new particle
-    addParticle(i, j, r, g, b);
-}
 
 const switch1 = document.getElementById("switch1");
 const switch2 = document.getElementById("switch2");
@@ -66,9 +44,11 @@ switch1.oninput = function() {
         if (this.checked) {
             theChuck.setFloat("SWITCH1", 1);
             theChuck.setFloat("SLIDER1", slider1.value/100.0);
+            update_slider1(slider1.value/100.0, true);
         }
         else {
             theChuck.setFloat("SWITCH1", 0);
+            update_slider1(1, true);
         }
     }
 } 
@@ -88,9 +68,11 @@ switch3.oninput = function() {
         if (this.checked) {
             theChuck.setFloat("SWITCH3", 1);
             theChuck.setFloat("SLIDER3", slider3.value/100.0);
+            update_slider3(slider3.value/100.0, true);
         }
         else {
             theChuck.setFloat("SWITCH3", 0);
+            update_slider3(0, true);
         }
     }
 } 
