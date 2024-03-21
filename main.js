@@ -45,7 +45,10 @@ var SLIDER1 = 0;
 var SLIDER2 = 0;
 var SLIDER3 = 0;
 var SLIDER4 = 0;
-var SLIDER5 = 0;
+var SWITCH1 = 0;
+var SWITCH2 = 0;
+var SWITCH3 = 0;
+var SWITCH4 = 0;
 var DIFF = 0;
 var PLAYRADIO = 0;
 
@@ -73,7 +76,13 @@ mainButton.addEventListener('click', async () =>
         SLIDER2 = await theChuck.getFloat("SLIDER2");
         SLIDER3 = await theChuck.getFloat("SLIDER3");
         SLIDER4 = await theChuck.getFloat("SLIDER4");
-        SLIDER5 = await theChuck.getFloat("SLIDER5");
+        SWITCH1 = await theChuck.getFloat("SWITCH1");
+        SWITCH2 = await theChuck.getFloat("SWITCH2");
+        SWITCH3 = await theChuck.getFloat("SWITCH3");
+        SWITCH4 = await theChuck.getFloat("SWITCH4");
+        PLAYRADIO = await theChuck.getInt("PLAYRADIO");
+
+        
         await theChuck.clearChuckInstance();
 
         state = 1;
@@ -90,7 +99,13 @@ mainButton.addEventListener('click', async () =>
         theChuck.setFloat("SLIDER2", SLIDER2);
         theChuck.setFloat("SLIDER3", SLIDER3);
         theChuck.setFloat("SLIDER4", SLIDER4);
-        theChuck.setFloat("SLIDER5", SLIDER5);
+
+        theChuck.setFloat("SWITCH1", SWITCH1);
+        theChuck.setFloat("SWITCH2", SWITCH2);
+        theChuck.setFloat("SWITCH3", SWITCH3);
+        theChuck.setFloat("SWITCH4", SWITCH4);
+
+        theChuck.setInt("PLAYRADIO", PLAYRADIO);
         
         state = 0;
         showStop();
@@ -138,7 +153,7 @@ function showStop() {
 
 const radioForm = document.getElementById("playRadio");
 const radioHandler = (event) => {
-    PLAYRADIO =  Number(radioForm["playing"].value)
+    PLAYRADIO = Number(radioForm["playing"].value);
     window.theChuck.setInt("PLAYRADIO", PLAYRADIO);
     // console.log("Radio clicked value", radioForm["playing"].value);
 };

@@ -46,7 +46,7 @@ me.dir() + "93.wav" => string filename;
 // sound file to load; me.dir() returns location of this file
 
 // the patch for playing
-SndBuf buf_ref => LPF l_ref => ResonZ rsn_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
+SndBuf buf_ref => LPF l_ref => JCRev rev_ref => Dyno d_ref => Pan2 pan_ref => dac;
 // for analysis
 SndBuf buf_ref2 => l_ref => rev_ref => d_ref => FFT fft1;
 
@@ -64,17 +64,6 @@ fun void ApplyGlobals_ref()
 {
     while( true )
     {
-        if (PLAYRADIO == 0) { // play both; play ref on the left
-            -1 => pan_ref.pan;
-            velocity => buf_ref.gain;
-        }
-        else if (PLAYRADIO == 1) { // play ref
-            0 => pan_ref.pan;
-            velocity => buf_ref.gain;
-        } 
-        else if (PLAYRADIO == 2) { // play user
-            0 => buf_ref.gain;
-        }
 
         if (SWITCH1 == 1) {
             REF1 => l_ref.freq;
@@ -83,11 +72,10 @@ fun void ApplyGlobals_ref()
             lpf_range => l_ref.freq;
         }
         if (SWITCH2 == 1) {
-            1 => rsn_ref.Q;
-            REF2 => rsn_ref.freq;
+            // 0.1 => l_ref.Q;
         }
         else {
-            0 => rsn_ref.Q;
+            // 0 => l_ref.Q;
         }
         if (SWITCH3 == 1) {
             REF3 => rev_ref.mix;
@@ -100,6 +88,18 @@ fun void ApplyGlobals_ref()
         }
         else {
             1 => d_ref.ratio;
+        }
+        
+        if (PLAYRADIO == 0) { // play both; play ref on the left
+            -1 => pan_ref.pan;
+            velocity => buf_ref.gain;
+        }
+        else if (PLAYRADIO == 1) { // play ref
+            0 => pan_ref.pan;
+            velocity => buf_ref.gain;
+        } 
+        else if (PLAYRADIO == 2) { // play user
+            0 => buf_ref.gain;
         }
 
         10::ms => now;
@@ -155,19 +155,6 @@ fun void ApplyGlobals_user()
 {
     while( true )
     {
-
-        if (PLAYRADIO == 0) { // play both; play user on the right
-            1 => pan_user.pan;
-            velocity => buf_user.gain;
-        }
-        else if (PLAYRADIO == 1) { // play ref
-            0 => buf_user.gain;
-        } 
-        else if (PLAYRADIO == 2) { // play user
-            -1 => pan_user.pan;
-            velocity => buf_user.gain;
-        }
-
         if (SWITCH1 == 1) {
             lpf_min + lpf_range * SLIDER1 => l_user.freq;
             l_user.freq() => TEST;
@@ -177,12 +164,10 @@ fun void ApplyGlobals_user()
         }
         200 => l_user.freq;
         if (SWITCH2 == 1) {
-            1 => rsn_user.Q;
-            Math.pow(SLIDER2, 4)=> float slide2_temp;
-            rsn_freq_min + (l_user.freq() - rsn_freq_min) * slide2_temp => rsn_user.freq;
+            // 0.1 => l_user.Q;
         }
         else {
-            0 => rsn_user.Q;
+            // 0 => l_user.Q;
         }
         if (SWITCH3 == 1) {
             reverb_min + reverb_range * SLIDER3 => rev_user.mix;
@@ -195,6 +180,18 @@ fun void ApplyGlobals_user()
         }
         else {
             1 => d_user.ratio;
+        }
+
+        if (PLAYRADIO == 0) { // play both; play user on the right
+            1 => pan_user.pan;
+            velocity => buf_user.gain;
+        }
+        else if (PLAYRADIO == 1) { // play ref
+            0 => buf_user.gain;
+        } 
+        else if (PLAYRADIO == 2) { // play user
+            0 => pan_user.pan;
+            velocity => buf_user.gain;
         }
 
         10::ms => now;
